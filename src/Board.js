@@ -8,6 +8,7 @@ import Ship from "./Ship";
 import { useUserContext } from "./hooks/UserContext";
 import { ACTION_TYPES } from "./App";
 import AddShips from "./AddShips";
+import UserLogo from "./UserLogo";
 
 export default function Board1({ letters, nums }) {
   const { boardPlayer1, dispatchPlayer1 } = useUserContext();
@@ -105,62 +106,65 @@ export default function Board1({ letters, nums }) {
   }
 
   return (
-    <div className="player-1">
-      <div className="player-board">
-        {horOrVert && <div>{message}</div>}
-        <div className="flex">
-          <div className="letters">
-            {letters.map((it, ind) => {
+    <>
+      <div className="player-1">
+        <div className="player-board">
+          {horOrVert && <div>{message}</div>}
+          <div className="flex">
+            <div className="letters">
+              {letters.map((it, ind) => {
+                return <div key={ind}>{it}</div>;
+              })}
+            </div>
+
+            <div className="full-board">
+              {boardPlayer1.player1.map((hor, horInd) => {
+                return hor.map((vert, vertIndex) => {
+                  return (
+                    <>
+                      <div
+                        className="one-board"
+                        id={vert.id}
+                        onClick={() => {
+                          fire(horInd, vertIndex);
+                        }}
+                      >
+                        {boardPlayer1.player1[horInd][vertIndex].isShot && (
+                          <Shot horInd={horInd} vertIndex={vertIndex} />
+                        )}
+                        {boardPlayer1.player1[horInd][vertIndex]
+                          .isShipBeginning && (
+                          <Ship
+                            horInd={horInd}
+                            vertIndex={vertIndex}
+                            horOrVert={horOrVert}
+                            whichShip={whichShip}
+                            setWhichShip={setWhichShip}
+                            setHorOrVert={setHorOrVert}
+                          />
+                        )}
+                      </div>
+
+                      {vertIndex === 9 && <br />}
+                    </>
+                  );
+                });
+              })}
+            </div>
+          </div>
+          <div className="numbers">
+            {nums.map((it, ind) => {
               return <div key={ind}>{it}</div>;
             })}
           </div>
-
-          <div className="full-board">
-            {boardPlayer1.player1.map((hor, horInd) => {
-              return hor.map((vert, vertIndex) => {
-                return (
-                  <>
-                    <div
-                      className="one-board"
-                      id={vert.id}
-                      onClick={() => {
-                        fire(horInd, vertIndex);
-                      }}
-                    >
-                      {boardPlayer1.player1[horInd][vertIndex].isShot && (
-                        <Shot horInd={horInd} vertIndex={vertIndex} />
-                      )}
-                      {boardPlayer1.player1[horInd][vertIndex]
-                        .isShipBeginning && (
-                        <Ship
-                          horInd={horInd}
-                          vertIndex={vertIndex}
-                          horOrVert={horOrVert}
-                          whichShip={whichShip}
-                          setWhichShip={setWhichShip}
-                          setHorOrVert={setHorOrVert}
-                        />
-                      )}
-                    </div>
-
-                    {vertIndex === 9 && <br />}
-                  </>
-                );
-              });
-            })}
-          </div>
         </div>
-        <div className="numbers">
-          {nums.map((it, ind) => {
-            return <div key={ind}>{it}</div>;
-          })}
-        </div>
+        <AddShips
+          setHorOrVert={setHorOrVert}
+          whichShip={whichShip}
+          setWhichShip={setWhichShip}
+        />
       </div>
-      <AddShips
-        setHorOrVert={setHorOrVert}
-        whichShip={whichShip}
-        setWhichShip={setWhichShip}
-      />
-    </div>
+      <UserLogo />
+    </>
   );
 }

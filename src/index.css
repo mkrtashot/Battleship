@@ -77,3 +77,8 @@ code {
 .player-1{
   display: flex;
 }
+
+.user-logo {
+  width: 200px;
+  height: 200px
+}
