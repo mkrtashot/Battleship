@@ -232,10 +232,6 @@ function App() {
     defaultState
   );
 
-  useEffect(() => {
-    console.log("Log ::: boardPlayer1 :::", boardPlayer1);
-  }, [boardPlayer1]);
-
   return (
     <State.Provider value={{ boardPlayer1, dispatchPlayer1 }}>
       <Board1 letters={letters} nums={nums} />
