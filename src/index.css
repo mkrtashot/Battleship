@@ -11,3 +11,69 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.flex{
+  display: flex;
+  flex-direction: row;
+}
+
+.letters div{
+  height: 52px;
+}
+
+.numbers{
+  display: flex;
+  flex-direction: row;
+  padding-left: 20px;
+}
+
+.numbers div{
+  width: 52px;
+  height: 50px;
+  
+}
+
+
+.full-board{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 520px;
+  background-image: url('./assets/photo/background.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: relative;
+  
+}
+
+.one-board{
+  border: 0.2px solid blue;
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+.ship{
+  position: absolute;
+  width: 40px;
+  height: 40px; 
+}
+.boom{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}
+
+.miss{
+  position: absolute;
+  top: 410px;
+}
+
+
+.shooting img{
+  position: absolute;
+  top: 0;
+}
+
+.player-1{
+  display: flex;
+}
