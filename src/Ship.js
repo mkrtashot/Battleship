@@ -13,16 +13,17 @@ export default function Ship({
   whichShip,
   setWhichShip,
   setHorOrVert,
+  player,
+  whichPlayer,
 }) {
   const { boardPlayer1, dispatchPlayer1 } = useUserContext();
 
   function myCallBack() {
     let src;
-    let shipLength = boardPlayer1.player1[horInd][vertIndex].shipLength;
-    let thisHorOrVert = boardPlayer1.player1[horInd][vertIndex].horOrVert;
-    console.dir(boardPlayer1.player1[horInd][vertIndex]);
-    if (boardPlayer1.player1[horInd][vertIndex].horOrVert === "hor") {
-      switch (boardPlayer1.player1[horInd][vertIndex].shipLength) {
+    let shipLength = boardPlayer1[whichPlayer][horInd][vertIndex].shipLength;
+    let thisHorOrVert = boardPlayer1[whichPlayer][horInd][vertIndex].horOrVert;
+    if (boardPlayer1[whichPlayer][horInd][vertIndex].horOrVert === "hor") {
+      switch (boardPlayer1[whichPlayer][horInd][vertIndex].shipLength) {
         case 4: {
           src = bigShip;
           break;
@@ -41,10 +42,9 @@ export default function Ship({
         }
       }
     } else {
-      switch (boardPlayer1.player1[horInd][vertIndex].shipLength) {
+      switch (boardPlayer1[whichPlayer][horInd][vertIndex].shipLength) {
         case 4: {
           src = bigShipVert;
-          console.log("Log ::: src :::", src);
           break;
         }
         case 3: {
@@ -71,9 +71,12 @@ export default function Ship({
       myWidth = "50px";
       myHeight = shipLength * 50 + "px";
     }
+    // if (boardPlayer1.player1[horInd][vertIndex].isShipBeginning)
     return createPortal(
       <img src={src} width={myWidth} height={myHeight} />,
-      document.getElementById(boardPlayer1.player1[horInd][vertIndex].id)
+      document.getElementById(
+        player + boardPlayer1[whichPlayer][horInd][vertIndex].id
+      )
     );
     // setHorOrVert(null);
     // setWhichShip(null);

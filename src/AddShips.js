@@ -4,12 +4,20 @@ import smallShip from "./assets/photo/ship-small.png";
 import useClickOutside from "./hooks/useClickOutside";
 import Modal from "./Modal";
 
-export default function AddShips({ setHorOrVert, whichShip, setWhichShip }) {
+export default function AddShips({
+  setHorOrVert,
+  whichShip,
+  setWhichShip,
+  whoseReady,
+  setWhoseReady,
+  player,
+}) {
   const [isShipSelected, setShipSelected] = useState(false);
   const [ship4, setShip4] = useState(1);
   const [ship3, setShip3] = useState(2);
   const [ship2, setShip2] = useState(3);
   const [ship1, setShip1] = useState(4);
+  const [showReadyButton, setShowReadyButton] = useState(true);
 
   const ship4Handler = () => {
     setShipSelected(!isShipSelected);
@@ -32,9 +40,14 @@ export default function AddShips({ setHorOrVert, whichShip, setWhichShip }) {
     setShip1((prev) => prev - 1);
   };
 
+  function handleReadyButton() {
+    setWhoseReady({ count: whoseReady.count + 1, whichPlayer: player });
+    setShowReadyButton(false);
+  }
+
   return (
     <div>
-      <div>Please Choose Your Tactic</div>
+      {!whoseReady.whichPlayer && <div>Please Choose Your Tactic</div>}
       <ul>
         {!!ship4 && (
           <li onClick={ship4Handler}>
@@ -69,6 +82,11 @@ export default function AddShips({ setHorOrVert, whichShip, setWhichShip }) {
           setHorOrVert={setHorOrVert}
         />
       )}
+      {ship1 === 0 &&
+        ship2 === 0 &&
+        ship3 === 0 &&
+        ship4 === 0 &&
+        showReadyButton && <button onClick={handleReadyButton}>Ready</button>}
     </div>
   );
 }

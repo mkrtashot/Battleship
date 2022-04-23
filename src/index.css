@@ -33,6 +33,10 @@ code {
   
 }
 
+.boards-full {
+  display: flex;
+}
+
 
 .full-board{
   display: flex;
@@ -81,4 +85,16 @@ code {
 .user-logo {
   width: 200px;
   height: 200px
+}
+
+.winner {
+  /* position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(50%, 50%);
+  font-weight: 200px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 200px;
 }

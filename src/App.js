@@ -1,7 +1,8 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 import Board1 from "./Board";
+import GameStatus from "./GameStatus";
 
 const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -21,6 +22,7 @@ let player1 = letters.map((letter, letterInd) => {
       isShipAllowed: true,
       shipLength: null,
       horOrVert: null,
+      shotShipLength: null,
     };
   });
 });
@@ -35,6 +37,7 @@ let player2 = letters.map((letter, letterInd) => {
       isShipAllowed: true,
       shipLength: null,
       horOrVert: null,
+      shotShipLength: null,
     };
   });
 });
@@ -49,7 +52,7 @@ export const State = createContext(defaultState);
 function boardHandler(board, action) {
   switch (action.type) {
     case ACTION_TYPES.IS_SHOT: {
-      let newBoard = board.player1.map((hor, horind) => {
+      let newBoard = board[action.player].map((hor, horind) => {
         if (horind === action.horInd) {
           let newHor = hor.map((vert, vertIndex) => {
             if (vertIndex === action.vertIndex) {
@@ -63,13 +66,13 @@ function boardHandler(board, action) {
           return hor;
         }
       });
-      return { ...board, player1: newBoard };
+      return { ...board, [action.player]: newBoard };
     }
     case ACTION_TYPES.IS_SHIP_HOR: {
       let index = action.whichShip + action.vertIndex - 1;
       let myHorInd = action.horInd + 1;
 
-      let newBoard = board.player1.map((hor, horind) => {
+      let newBoard = board[action.player].map((hor, horind) => {
         let breakingPoint = null;
         if (horind === action.horInd) {
           let newHor = hor.map((vert, vertIndex) => {
@@ -83,6 +86,8 @@ function boardHandler(board, action) {
                 shipLength: action.whichShip,
                 horOrVert: action.horOrVert,
                 isShipAllowed: false,
+                shotShipLength: action.whichShip,
+                shipId: action.player + horind + action.vertIndex,
               };
             } else if (breakingPoint) {
               breakingPoint--;
@@ -92,6 +97,9 @@ function boardHandler(board, action) {
                 isShip: true,
                 shipLength: action.whichShip,
                 isShipAllowed: false,
+                shotShipLength: action.whichShip,
+                shipId: action.player + horind + action.vertIndex,
+                horOrVert: action.horOrVert,
               };
             } else if (
               vertIndex === action.vertIndex - 1 ||
@@ -138,13 +146,13 @@ function boardHandler(board, action) {
           return hor;
         }
       });
-      return { ...board, player1: newBoard };
+      return { ...board, [action.player]: newBoard };
     }
     case ACTION_TYPES.IS_SHIP_VERT: {
       let breakingPoint = null;
       let index = action.vertIndex + 1;
 
-      let newBoard = board.player1.map((hor, horind) => {
+      let newBoard = board[action.player].map((hor, horind) => {
         if (horind === action.horInd) {
           let newHor = hor.map((vert, vertIndex) => {
             console.log("Log ::: action.vertIndex :::", action.vertIndex);
@@ -157,6 +165,8 @@ function boardHandler(board, action) {
                 shipLength: action.whichShip,
                 horOrVert: action.horOrVert,
                 isShipAllowed: false,
+                shotShipLength: action.whichShip,
+                shipId: action.player + action.horInd + action.vertIndex,
               };
             } else if (
               vertIndex === action.vertIndex + 1 ||
@@ -183,6 +193,9 @@ function boardHandler(board, action) {
                 shipLength: action.whichShip,
                 horOrVert: action.horOrVert,
                 isShipAllowed: false,
+                shotShipLength: action.whichShip,
+                shipId: action.player + action.horInd + action.vertIndex,
+                horOrVert: action.horOrVert,
               };
             } else if (
               vertIndex === action.vertIndex + 1 ||
@@ -221,7 +234,7 @@ function boardHandler(board, action) {
           return hor;
         }
       });
-      return { ...board, player1: newBoard };
+      return { ...board, [action.player]: newBoard };
     }
   }
 }
@@ -231,10 +244,83 @@ function App() {
     boardHandler,
     defaultState
   );
+  const [shipsData1, setShipsData1] = useState({});
+  const [shipsData2, setShipsData2] = useState({});
+  const [whoseTurn, setWhoseTurn] = useState(null);
+  const [whoseReady, setWhoseReady] = useState({ count: 0, whichPlayer: null });
+  const [winner, setWinner] = useState(null);
+  const player1 = 1;
+  const player2 = 2;
+
+  useEffect(() => {
+    if (whoseReady.count === 2) {
+      setWhoseTurn(1);
+    }
+  }, [whoseReady]);
+
+  useEffect(() => {
+    if (whoseTurn) {
+      if (player1) {
+        let length = Object.keys(shipsData1).length;
+        for (const key in shipsData1) {
+          if (shipsData1[key] === 0) {
+            length--;
+          }
+        }
+        if (length === 0) {
+          setWinner("The Winner is Player2");
+        }
+      }
+
+      if (player2) {
+        let length = Object.keys(shipsData2).length;
+        for (const key in shipsData2) {
+          if (shipsData2[key] === 0) {
+            length--;
+          }
+        }
+        if (length === 0) {
+          setWinner("The winner is Player 1");
+        }
+      }
+    }
+  }, [shipsData1, shipsData2]);
 
   return (
     <State.Provider value={{ boardPlayer1, dispatchPlayer1 }}>
-      <Board1 letters={letters} nums={nums} />
+      {(!winner && (
+        <>
+          {!whoseTurn && (
+            <GameStatus whoseReady={whoseReady} setWhoseReady={setWhoseReady} />
+          )}
+          <Board1
+            letters={letters}
+            nums={nums}
+            player={player1}
+            shipsData1={shipsData1}
+            setShipsData1={setShipsData1}
+            shipsData2={shipsData2}
+            setShipsData2={setShipsData2}
+            whoseTurn={whoseTurn}
+            setWhoseTurn={setWhoseTurn}
+            whoseReady={whoseReady}
+            setWhoseReady={setWhoseReady}
+          />
+          <Board1
+            letters={letters}
+            nums={nums}
+            player={player2}
+            shipsData1={shipsData1}
+            setShipsData1={setShipsData1}
+            shipsData2={shipsData2}
+            setShipsData2={setShipsData2}
+            whoseTurn={whoseTurn}
+            setWhoseTurn={setWhoseTurn}
+            whoseReady={whoseReady}
+            setWhoseReady={setWhoseReady}
+          />
+        </>
+      )) || <div className="winner">{winner}</div>}
     </State.Provider>
   );
 }

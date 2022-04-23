@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CircularProgressbar,
   CircularProgressbarWithChildren,
@@ -7,18 +7,36 @@ import "react-circular-progressbar/dist/styles.css";
 import userPhoto from "./assets/photo/user-logo.webp";
 let timerInterval;
 
-export default function UserLogo() {
-  const [timer, setTimer] = useState(0);
+export default function UserLogo({
+  whoseTurn,
+  setWhoseTurn,
+  player,
+  isShot,
+  setIsShot,
+}) {
+  let showPlayer;
 
-  function timerHandler() {
-    timerInterval = setInterval(() => {
-      setTimer((prev) => prev + 5);
-    }, 1000);
+  if (player === 1) {
+    showPlayer = "Player 1";
+  } else if (player === 2) {
+    showPlayer = "Player 2";
   }
 
-  if (timer >= 100) {
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    if (whoseTurn === player) {
+      timerInterval = setInterval(() => {
+        setTimer((prev) => prev + 5);
+      }, 1000);
+    }
+  }, [whoseTurn]);
+
+  if (timer >= 100 || isShot) {
     clearInterval(timerInterval);
     setTimer(0);
+    setWhoseTurn(3 - whoseTurn);
+    setIsShot(false);
   }
 
   return (
@@ -26,8 +44,7 @@ export default function UserLogo() {
       <CircularProgressbarWithChildren value={timer}>
         <img src={userPhoto} style={{ width: 100, height: 100 }} />
       </CircularProgressbarWithChildren>
-
-      <button onClick={timerHandler}>Start timer</button>
+      <div>{showPlayer}</div>
     </div>
   );
 }
